@@ -5,6 +5,10 @@
 @endsection
 
 @section('content')
+    {!! Form::open(['action' => 'ThreadController@create', 'method' => 'GET']) !!}
+        {{Form::hidden('forum', $forum->id)}}
+        {{Form::submit('Create Thread', ['class' => 'btn btn-primary btn-sm pull-right'])}}
+    {!! Form::close() !!}
     <ul class="breadcrumb">
         <li><a href="/">Home</a></li>
         <li><a href="/forums/{{$parent->id}}/">{{$parent->name}}</a></li>
@@ -18,6 +22,9 @@
             </div>
         @endforeach
     @else
-        <h3 class="text-center">There are currently no threads in this forum.</h3>
+        <h3 class="text-center">
+            There are currently no threads in this forum.<br />
+            Why not start one yourself?
+        </h3>
     @endif
 @endsection

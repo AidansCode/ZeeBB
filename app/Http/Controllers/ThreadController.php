@@ -4,10 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Forum;
 use App\Thread;
+use App\Post;
 use Illuminate\Http\Request;
 
 class ThreadController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -23,9 +29,22 @@ class ThreadController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $forumsRaw = Forum::where('type', 'f')->get();
+        $forums = [];
+        foreach ($forumsRaw as $forum) {
+            $forums[$forum->id] = $forum->name;
+        }
+
+        $data = [
+            'forums' => $forums,
+        ];
+        $default = $request->input('forum');
+        if ($default != null)
+            $data['default'] = $default;
+
+        return view('pages.threads.create')->with($data);
     }
 
     /**
@@ -36,7 +55,42 @@ class ThreadController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'forum' => 'required|integer|min:0',
+            'subject' => 'required',
+            'message' => 'required',
+        ]);
+
+        $forum = Forum::find($request->input('forum'));
+        if ($forum == null)
+            return back()->withInput()->with('error', 'Invalid forum specified');
+
+        $user = auth()->user();
+
+        $post = new Post;
+        $post->thread_id = 0;
+        $post->forum_id = $forum->id;
+        $post->user_id = $user->id;
+        $post->user_name = $user->name;
+        $post->subject = $request->input('subject');
+        $post->message = $request->input('message');
+        $post->save();
+
+        $thread = new Thread;
+        $thread->forum_id = $forum->id;
+        $thread->user_id = auth()->user()->id;
+        $thread->user_name = auth()->user()->name;
+        $thread->subject = $request->input('subject');
+        $thread->first_post_id = $post->id;
+        $thread->last_poster_id = $user->id;
+        $thread->last_poster_name = $user->name;
+        $thread->closed = 0;
+        $thread->save();
+
+        $post->thread_id = $thread->id;
+        $post->save();
+
+        return redirect('/thread/' . $thread->id)->with('success', 'Your thread has been created!');
     }
 
     /**
@@ -57,7 +111,7 @@ class ThreadController extends Controller
             'thread' => $thread,
             'category' => $forum->parent,
             'forum' => $forum,
-            'posts' => $thread->posts()->orderBy('created_at', 'ASC')->get(),
+            'posts' => $thread->posts()->orderBy('created_at', 'ASC')->paginate(10),
         ];
 
         return view('pages.threads.show')->with($data);

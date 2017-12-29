@@ -20,9 +20,22 @@
                     <p class="text-center">{{$post->user->name}}</p>
                 </div>
                 <div class="col-md-11" style="height: 100%;">
-                    <p>{{$post->message}}</p>
+                    <p>{!!nl2br($post->message)!!}</p>
                 </div>
             </div>
         </div>
     @endforeach
+    <hr>
+    {!! Form::open(['action' => 'PostController@store', 'method' => 'POST']) !!}
+        <div class="form-group">
+            {{Form::label('message', 'Your Response')}}
+            {{Form::textarea('message', '', ['class' => 'form-control'])}}
+        </div>
+        {{Form::hidden('thread', $thread->id)}}
+        <div class="pull-right">
+            {{Form::submit('Submit', ['class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px; margin-right: 15px;'])}}
+            <a href="#" class="btn btn-default pull-right">Preview</a>
+        </div>
+    {!! Form::close() !!}
+    {{$posts->render()}}
 @endsection

@@ -60,7 +60,7 @@ class ForumController extends Controller
         else { //If is forum
             $data = [
                 'forum' => $forum,
-                'threads' => $forum->threads,
+                'threads' => $forum->threads()->orderBy('updated_at', 'DESC')->get(),
                 'parent' => $forum->parent,
             ];
             return view('pages.forums.show_forum')->with($data);
