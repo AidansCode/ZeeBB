@@ -50,14 +50,26 @@ class PostController extends Controller
         if ($thread == null)
             return redirect('/')->with('error', 'Invalid thread specified');
 
-        $post = new Post();
+        $user = auth()->user();
+
+        $post = new Post;
         $post->thread_id = $thread->id;
         $post->forum_id = $thread->forum_id;
-        $post->user_id = auth()->user()->id;
-        $post->user_name = auth()->user()->name;
+        $post->user_id = $user->id;
+        $post->user_name = $user->name;
         $post->subject = 'Re: ' . $thread->subject;
         $post->message = $request->input('message');
         $post->save();
+
+        $thread->last_poster_id = $user->id;
+        $thread->last_poster_name = $user->name;
+        $thread->save();
+
+        $forum = $thread->forum;
+        $forum->last_poster_id = $user->id;
+        $forum->last_poster_name = $user->name;
+        $forum->last_post_id = $post->id;
+        $forum->save();
 
         return redirect('/thread/' . $thread->id)->with('success', 'Your post has successfully been added to the thread!');
     }
@@ -65,12 +77,15 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
+    public function show($id)
     {
-        //
+        $post = Post::find($id);
+        if ($post == null)
+            return redirect('/')->with('error', 'The requested post was not found!');
+
+        return redirect('/thread/' . $post->thread->id); //Redirect to thread containing desired post
     }
 
     /**

@@ -17,8 +17,11 @@
     @if(count($threads) > 0)
         @foreach($threads as $thread)
             <div class="well well-sm">
-                <h4><a href="/thread/{{$thread->id}}/">{{$thread->subject}}</a></h4>
-                Author: {{$thread->last_poster_name}}
+                <h5 class="pull-right">
+                    Last Post by: {{$thread->last_poster_name}}
+                </h5>
+                <h4><a href="/thread/{{$thread->id}}/">{{$thread->subject}}</a> <small>by {{$thread->user_name}}</small></h4>
+                {{intval($thread->posts()->count() - 1)}} replies
             </div>
         @endforeach
     @else

@@ -20,7 +20,15 @@
                         <div class="panel-body">
                             @foreach($forums as $forum)
                                 @if($forum->type== 'f' && $forum->parent_id==$category->id)
-                                    <a href="/forums/{{$forum->id}}/">{{$forum->name}}</a> ({{$forum->description}})<br />
+                                    <a href="/forums/{{$forum->id}}/">{{$forum->name}}</a> ({{$forum->description}})
+                                    <span class="pull-right">
+                                        Last Post:
+                                        <a href="/thread/{{$forum->lastPost->thread->id}}">
+                                            {{$forum->lastPost->subject}}
+                                        </a>
+                                        by {{$forum->last_poster_name}}
+                                    </span>
+                                    <br />
                                 @endif
                             @endforeach
                         </div>

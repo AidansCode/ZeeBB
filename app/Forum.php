@@ -22,4 +22,9 @@ class Forum extends Model
     public function parent() {
         return $this->belongsTo('App\Forum', 'parent_id');
     }
+
+    public function lastPost() {
+        //I realize the forum doesn't belong to the post but that's the relationship I need for this method
+        return $this->belongsTo('App\Post', 'last_post_id');
+    }
 }

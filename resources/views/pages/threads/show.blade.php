@@ -29,12 +29,11 @@
     {!! Form::open(['action' => 'PostController@store', 'method' => 'POST']) !!}
         <div class="form-group">
             {{Form::label('message', 'Your Response')}}
-            {{Form::textarea('message', '', ['class' => 'form-control'])}}
+            {{Form::textarea('message', '', ['class' => 'form-control ckeditor'])}}
         </div>
         {{Form::hidden('thread', $thread->id)}}
         <div class="pull-right">
-            {{Form::submit('Submit', ['class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px; margin-right: 15px;'])}}
-            <a href="#" class="btn btn-default pull-right">Preview</a>
+            {{Form::submit('Submit', ['class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px;'])}}
         </div>
     {!! Form::close() !!}
     {{$posts->render()}}
