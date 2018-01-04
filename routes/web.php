@@ -18,3 +18,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('forums', 'ForumController');
 Route::resource('thread', 'ThreadController');
 Route::resource('post', 'PostController');
+Route::get('user/{id}/', 'PageController@user');
+Route::get('search/{id}/', 'PageController@search');
