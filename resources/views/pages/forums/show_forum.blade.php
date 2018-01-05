@@ -18,9 +18,9 @@
         @foreach($threads as $thread)
             <div class="well well-sm">
                 <h5 class="pull-right">
-                    Last Post by: {{$thread->last_poster_name}}
+                    Last Post by: {!! formatUsernameLink($forum->last_poster_id) !!}
                 </h5>
-                <h4><a href="/thread/{{$thread->id}}/">{{$thread->subject}}</a> <small>by {{$thread->user_name}}</small></h4>
+                <h4><a href="/thread/{{$thread->id}}/">{{$thread->subject}}</a> <small>by {!! formatUsernameLink($thread->user_id) !!}</small></h4>
                 {{intval($thread->posts()->count() - 1)}} replies
             </div>
         @endforeach

@@ -11,3 +11,12 @@
 
         return $content;
     }
+
+    function formatUsernameLink($userID) {
+        $user = \App\User::find($userID);
+
+        if ($user == null)
+            return '<a href="#">Unknown User</a>';
+
+        return '<a href="/user/' . $userID . '">' . $user->name . '</a>';
+    }

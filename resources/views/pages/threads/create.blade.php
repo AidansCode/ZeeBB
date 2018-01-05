@@ -22,7 +22,7 @@
         </div>
         <div class="form-group">
             {{Form::label('message', 'Message')}}
-            {{Form::textarea('message', '', ['class' => 'form-control ckeditor', 'placeholder' => 'Message'])}}
+            {{Form::textarea('message', '', ['class' => 'form-control', 'id' => 'ckeditor','placeholder' => 'Message'])}}
         </div>
         {{Form::submit('Create Post', ['class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px;'])}}
     {!! Form::close() !!}

@@ -85,7 +85,7 @@ class PostController extends Controller
         if ($post == null)
             return redirect('/')->with('error', 'The requested post was not found!');
 
-        return redirect('/thread/' . $post->thread->id); //Redirect to thread containing desired post
+        return redirect('/thread/' . $post->thread->id . '#post' . $id); //Redirect to thread containing desired post
     }
 
     /**

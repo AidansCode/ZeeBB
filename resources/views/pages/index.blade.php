@@ -26,7 +26,7 @@
                                         <a href="/thread/{{$forum->lastPost->thread->id}}">
                                             {{$forum->lastPost->subject}}
                                         </a>
-                                        by {{$forum->last_poster_name}}
+                                        by {!! formatUsernameLink($forum->last_poster_id) !!}
                                     </span>
                                     <br />
                                 @endif

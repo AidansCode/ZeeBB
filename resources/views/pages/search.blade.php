@@ -21,10 +21,11 @@
                 @foreach($results as $result)
                     <tr>
                         <td>{{Carbon\Carbon::parse($result->created_at)->format('m/d/Y g:i a')}}</td>
-                        <td><a href="/thread/{{$result->thread_id}}">{{$result->subject}}</a></td>
                         @if($type == 'Threads')
+                            <td><a href="/thread/{{$result->id}}">{{$result->subject}}</a></td>
                             <td>{{formatPostContent(App\Post::find($result->first_post_id)->message)}}</td>
                         @else
+                            <td><a href="/thread/{{$result->thread_id}}#post{{$result->id}}">{{$result->subject}}</a></td>
                             <td>{{formatPostContent($result->message)}}</td>
                         @endif
                     </tr>
