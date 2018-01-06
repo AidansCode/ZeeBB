@@ -10,7 +10,7 @@ class PageController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth', ['only' => ['user']]);
+        $this->middleware('auth', ['except' => ['index']]);
     }
 
     public function index() {

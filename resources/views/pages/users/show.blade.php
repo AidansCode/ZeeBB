@@ -19,7 +19,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Summary</div>
                 <div class="panel-body">
-                    <p>Group: Owner</p>
+                    <p>Group: {{$user->group->name}}</p>
                     <p>Date Joined: {{ Carbon\Carbon::parse($user->created_at)->format('m/d/Y') }}</p>
                     <p>Threads: {{$user->threads()->count()}} (<a href="/search/{{$user->id}}?type=thread">All Threads</a>)</p>
                     <p>Posts: {{$user->posts()->count()}} (<a href="/search/{{$user->id}}?type=post">All Posts</a>)</p>

@@ -13,7 +13,7 @@
         <div class="well well-sm">
             <h5 class="pull-right">
                 Last Post:
-                <a href="/thread/{{$forum->lastPost->thread->id}}">
+                <a href="/thread/{{$forum->lastPost->thread->id}}#post{{$forum->last_post_id}}">
                     {{$forum->lastPost->subject}}
                 </a>
                 by {!! formatUsernameLink($forum->last_poster_id) !!}
