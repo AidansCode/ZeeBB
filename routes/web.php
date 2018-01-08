@@ -23,9 +23,17 @@ Route::resource('thread', 'ThreadController');
 Route::resource('post', 'PostController');
 
 Route::get('admin', 'AdminController@index');
+
 Route::get('admin/users', 'AdminController@userIndex');
 Route::get('admin/users/edit/{id}', 'AdminController@userEdit');
 Route::get('admin/users/create', 'AdminController@userCreate');
 Route::post('admin/users', 'AdminController@userStore');
 Route::put('admin/users/{id}', 'AdminController@userUpdate');
 Route::delete('admin/users/{id}', 'AdminController@userDestroy');
+
+Route::get('admin/groups', 'AdminController@groupIndex');
+Route::get('admin/groups/edit/{id}', 'AdminController@groupEdit');
+Route::get('admin/groups/create', 'AdminController@groupCreate');
+Route::post('admin/groups', 'AdminController@groupStore');
+Route::put('admin/groups/{id}', 'AdminController@groupUpdate');
+Route::delete('admin/groups/{id}', 'AdminController@groupDestroy');

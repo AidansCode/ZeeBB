@@ -69,6 +69,10 @@ class AdminController extends Controller
 
     public function userEdit($id) {
         $user = User::find($id);
+
+        if ($user == null)
+            return redirect('/admin/users')->with('error', 'The specified user does not exist!');
+
         $rawGroups = Group::all();
         $groups = [];
         foreach ($rawGroups as $group)
@@ -126,5 +130,76 @@ class AdminController extends Controller
         User::destroy($id);
 
         return redirect('/admin/users/')->with('success', 'You have successfully deleted user ID: ' . $id);
+    }
+
+    public function groupIndex() {
+        $groups = Group::orderBy('power_level', 'DESC')->paginate(20);
+
+        return view('pages.admin.groups.index')->with('groups', $groups);
+    }
+
+    public function groupCreate() {
+        return view('pages.admin.groups.create');
+    }
+
+    public function groupStore(Request $request) {
+        $this->validate($request, [
+            'name' => 'required|unique:groups',
+            'power_level' => 'required|integer|min:0',
+            'is_staff_group' => 'sometimes|required|integer|min:0|max:1',
+            'is_banned_group' => 'sometimes|required|integer|min:0|max:1',
+        ]);
+
+        $group = new Group;
+        $group->name = $request->input('name');
+        $group->power_level = $request->input('power_level');
+        $group->is_staff_group = ($request->input('is_staff_group') ? true : false);
+        $group->is_banned_group = ($request->input('is_banned_group') ? true : false);
+        $group->save();
+
+        return redirect('/admin/groups')->with('success', 'You have successfully created a group with ID: ' . $group->id);
+    }
+
+    public function groupEdit($id) {
+        $group = Group::find($id);
+        if ($group == null)
+            return redirect('/admin/groups')->with('error', 'The specified group does not exist!');
+
+        return view('pages.admin.groups.edit')->with('group', $group);
+    }
+
+    public function groupUpdate(Request $request, $id) {
+        $group = Group::find($id);
+        if ($group == null) {
+            return redirect('/admin/groups')->with('error', 'The specified group does not exist!');
+        }
+
+        $this->validate($request, [
+            'name' => 'required|unique:groups,name,' . $id,
+            'power_level' => 'required|integer|min:0',
+            'is_staff_group' => 'sometimes|required|integer|min:0|max:1',
+            'is_banned_group' => 'sometimes|required|integer|min:0|max:1',
+        ]);
+
+        $group->name = $request->input('name');
+        $group->power_level = $request->input('power_level');
+        $group->is_staff_group = ($request->input('is_staff_group') ? true : false);
+        $group->is_banned_group = ($request->input('is_banned_group') ? true : false);
+        $group->save();
+
+        return redirect('/admin/groups/edit/' . $id)->with('success', 'Your changes have been saved!');
+
+    }
+
+    public function groupDestroy($id) {
+        $group = Group::find($id);
+        $count = $group->users()->count();
+        if ($count > 0) {
+            return back()->withInput()->with('error', 'This group can not be deleted as ' . $count . ' user(s) are currently assigned to it. Move those users to delete the group.');
+        }
+
+        $group->delete();
+
+        return redirect('/admin/groups/')->with('success', 'You have successfully deleted group ID: ' . $id);
     }
 }
