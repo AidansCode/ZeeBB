@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Post;
 use App\Thread;
+use App\Forum;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -70,6 +71,12 @@ class PostController extends Controller
         $forum->last_poster_name = $user->name;
         $forum->last_post_id = $post->id;
         $forum->save();
+
+        $cat = $forum->parent;
+        $cat->last_poster_id = $user->id;
+        $cat->last_poster_name = $user->name;
+        $cat->last_post_id = $post->id;
+        $cat->save();
 
         return redirect('/thread/' . $thread->id)->with('success', 'Your post has successfully been added to the thread!');
     }

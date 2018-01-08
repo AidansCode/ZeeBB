@@ -90,6 +90,17 @@ class ThreadController extends Controller
         $post->thread_id = $thread->id;
         $post->save();
 
+        $forum->last_poster_id = auth()->user()->id;
+        $forum->last_poster_name = auth()->user()->name;
+        $forum->last_post_id = $post->id;
+        $forum->save();
+
+        $cat = $forum->parent;
+        $cat->last_poster_id = auth()->user()->id;
+        $cat->last_poster_name = auth()->user()->name;
+        $cat->last_post_id = $post->id;
+        $cat->save();
+
         return redirect('/thread/' . $thread->id)->with('success', 'Your thread has been created!');
     }
 

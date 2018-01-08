@@ -12,11 +12,15 @@
     @foreach($forums as $forum)
         <div class="well well-sm">
             <h5 class="pull-right">
-                Last Post:
-                <a href="/thread/{{$forum->lastPost->thread->id}}#post{{$forum->last_post_id}}">
-                    {{$forum->lastPost->subject}}
-                </a>
-                by {!! formatUsernameLink($forum->last_poster_id) !!}
+                @if($forum->last_post_id != 0)
+                    Last Post:
+                    <a href="/thread/{{$forum->lastPost->thread->id}}#post{{$forum->last_post_id}}">
+                        {{$forum->lastPost->subject}}
+                    </a>
+                    by {!! formatUsernameLink($forum->last_poster_id) !!}
+                @else
+                    No Posts
+                @endif
             </h5>
             <h4><a href="/forums/{{$forum->id}}/">{{$forum->name}}</a></h4>
             {{$forum->description}}

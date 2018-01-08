@@ -37,3 +37,8 @@ Route::get('admin/groups/create', 'AdminController@groupCreate');
 Route::post('admin/groups', 'AdminController@groupStore');
 Route::put('admin/groups/{id}', 'AdminController@groupUpdate');
 Route::delete('admin/groups/{id}', 'AdminController@groupDestroy');
+
+Route::get('admin/forums', 'AdminController@forumIndex');
+
+Route::get('admin/forums/create', 'AdminController@forumCreate');
+Route::post('admin/forums', 'AdminController@forumStore');

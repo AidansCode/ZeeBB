@@ -202,4 +202,45 @@ class AdminController extends Controller
 
         return redirect('/admin/groups/')->with('success', 'You have successfully deleted group ID: ' . $id);
     }
+
+    public function forumIndex() {
+        $data = [
+            'categories' => Forum::where('type', 'c')->get(),
+            'forums' => Forum::where('type', 'f')->get(),
+        ];
+
+        return view('pages.admin.forums.index')->with($data);
+    }
+
+    public function forumCreate() {
+        $rawCategories = Forum::where('type', 'c')->get();
+        $categories = [];
+        foreach($rawCategories as $category) {
+            $categories[$category->id] = $category->name;
+        }
+        return view('pages.admin.forums.create')->with('categories', $categories);
+    }
+
+    public function forumStore(Request $request) {
+        $this->validate($request, [
+            'type' => 'required|in:c,f',
+            'parent_id' => 'required_if:type,==,f',
+            'name' => 'required',
+            'description' => 'required',
+            'closed' => 'sometimes|required|integer|min:0|max:1',
+        ]);
+
+        $forum = new Forum;
+        $forum->type = $request->input('type');
+        $forum->parent_id = $forum->type == 'f' ? $request->input('parent_id') : 0;
+        $forum->name = $request->input('name');
+        $forum->description = $request->input('description');
+        $forum->last_poster_id = 0;
+        $forum->last_poster_name = '';
+        $forum->last_post_id = 0;
+        $forum->closed = $request->input('closed') ? true : false;
+        $forum->save();
+
+        return redirect('/admin/forums')->with('success', 'You have successfully created a forum with ID: ' . $forum->id);
+    }
 }
