@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Hash;
 
 use App\User;
@@ -230,6 +229,13 @@ class AdminController extends Controller
             'closed' => 'sometimes|required|integer|min:0|max:1',
         ]);
 
+        if ($request->input('type') == 'f') { //If is type forum
+            $parent = Forum::find($request->input('parent_id'));
+            if ($parent == null || $parent->type == 'f') { //If specified parent does not exist or is also a forum
+                return back()->withInput()->with('error', 'Illegal parent specified');
+            }
+        }
+
         $forum = new Forum;
         $forum->type = $request->input('type');
         $forum->parent_id = $forum->type == 'f' ? $request->input('parent_id') : 0;
@@ -242,5 +248,58 @@ class AdminController extends Controller
         $forum->save();
 
         return redirect('/admin/forums')->with('success', 'You have successfully created a forum with ID: ' . $forum->id);
+    }
+
+    public function forumEdit($id) {
+        $forum = Forum::find($id);
+
+        if ($forum == null) {
+            return redirect('/admin/forums')->with('error', 'The specified forum does not exist!');
+        }
+
+        $categories = [];
+
+        if ($forum->type == 'f') {
+            $rawCategories = Forum::where('type', 'c')->get();
+            foreach($rawCategories as $category) {
+                $categories[$category->id] = $category->name;
+            }
+        }
+
+        $data = [
+            'forum' => $forum,
+            'categories' => $categories,
+        ];
+
+        return view('pages.admin.forums.edit')->with($data);
+    }
+
+    public function forumUpdate(Request $request, $id) {
+        $forum = Forum::find($id);
+        if ($forum == null) {
+            return redirect('/admin/forums')->with('error', 'The specified forum does not exist!');
+        }
+
+        $this->validate($request, [
+            'type' => 'required|in:c,f',
+            'parent_id' => 'sometimes|required_if:type,==,f',
+            'name' => 'required',
+            'description' => 'required',
+            'closed' => 'sometimes|required|integer|min:0|max:1',
+        ]);
+
+        if ($forum->type == 'f') {
+            $parent = Forum::find($request->input('parent_id'));
+            if ($parent == null || $parent->type == 'f') { //If specified parent does not exist or is also a forum
+                return back()->withInput()->with('error', 'Illegal parent specified');
+            }
+            $forum->parent_id = $request->input('parent_id');
+        }
+        $forum->name = $request->input('name');
+        $forum->description = $request->input('description');
+        $forum->closed = $request->input('closed') ? true : false;
+        $forum->save();
+
+        return redirect('/admin/forums/edit/' . $forum->id)->with('success', 'Your changes have been saved!');
     }
 }

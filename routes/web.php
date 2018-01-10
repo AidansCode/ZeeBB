@@ -39,6 +39,7 @@ Route::put('admin/groups/{id}', 'AdminController@groupUpdate');
 Route::delete('admin/groups/{id}', 'AdminController@groupDestroy');
 
 Route::get('admin/forums', 'AdminController@forumIndex');
-
+Route::get('admin/forums/edit/{id}', 'AdminController@forumEdit');
 Route::get('admin/forums/create', 'AdminController@forumCreate');
 Route::post('admin/forums', 'AdminController@forumStore');
+Route::put('admin/forums/{id}', 'AdminController@forumUpdate');
