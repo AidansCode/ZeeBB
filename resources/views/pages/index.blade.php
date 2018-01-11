@@ -24,7 +24,7 @@
                                     <span class="pull-right">
                                         @if($forum->last_post_id != 0)
                                             Last Post:
-                                            <a href="/thread/{{$forum->lastPost->thread->id}}">
+                                            <a href="/thread/{{$forum->lastPost->thread->id}}#post{{$forum->last_post_id}}">
                                                 {{$forum->lastPost->subject}}
                                             </a>
                                             by {!! formatUsernameLink($forum->last_poster_id) !!}

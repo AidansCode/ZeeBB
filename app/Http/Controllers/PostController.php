@@ -98,24 +98,47 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Post  $post
+     * @param  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Post $post)
+    public function edit($id)
     {
-        //
+        $post = Post::find($id);
+        if ($post == null) {
+            return redirect('/')->with('error', 'The specified post does not exist!');
+        }
+
+        if ($post->user_id != auth()->id()) {
+            return redirect('/')->with('error', 'You do not have permission to edit this post!');
+        }
+
+        return view('pages.posts.edit')->with('post', $post);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Post  $post
+     * @param  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $id)
     {
-        //
+        $post = Post::find($id);
+        if ($post == null) { //If post doesn't exist
+            return redirect('/')->with('error', 'The specified post does not exist!');
+        }
+        if ($post->user_id != auth()->id()) { //If user isn't post's creator
+            return redirect('/')->with('error', 'You do not have permission to edit this post!');
+        }
+
+        $this->validate($request, [
+            'message' => 'required',
+        ]);
+
+        $post->message = $request->input('message');
+        $post->save();
+        return redirect('/thread/' . $post->thread_id)->with('success', 'Your post has been successfully updated!');
     }
 
     /**
