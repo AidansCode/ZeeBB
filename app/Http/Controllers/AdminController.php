@@ -10,6 +10,7 @@ use App\Group;
 use App\Forum;
 use App\Post;
 use App\Thread;
+use App\Setting;
 
 class AdminController extends Controller
 {
@@ -19,7 +20,7 @@ class AdminController extends Controller
     }
 
     public function index() {
-        return view('pages.admin.home');
+        return view('pages.admin.home')->with('adminNotes', Setting::where('name', 'adminnotes')->get()[0]);
     }
 
     public function userIndex() {
@@ -301,5 +302,20 @@ class AdminController extends Controller
         $forum->save();
 
         return redirect('/admin/forums/edit/' . $forum->id)->with('success', 'Your changes have been saved!');
+    }
+
+    public function settingUpdate(Request $request, $id) {
+        $setting = Setting::find($id);
+        if ($setting == null) {
+            return redirect('/admin')->with('error', 'The specified setting does not exist!');
+        }
+
+        if ($setting->type = 'textarea') {
+            $val = $request->input('value');
+            $setting->value = $val != null ? $val : ''; //If value is specified, use value, otherwise use empty string
+        }
+        $setting->save();
+
+        return back()->with('success', 'Your changes have been saved!');
     }
 }
