@@ -24,7 +24,7 @@
                     {!! $post->message !!}
                 </div>
             </div>
-            @if(Auth::check() && Auth::user()->id == $post->user_id)
+            @if(Auth::check() && (Auth::user()->id == $post->user_id || Auth::user()->group->is_staff_group))
                 <div class="row">
                     <div class="col-md-offset-10 col-md-2">
                         <a href="/post/{{$post->id}}/edit" class="btn btn-primary pull-right">Edit</a>

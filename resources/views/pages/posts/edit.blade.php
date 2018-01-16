@@ -12,6 +12,12 @@
             {{Form::label('message', 'Your Response')}}
             {{Form::textarea('message', $post->message, ['class' => 'form-control', 'id' => 'ckeditor'])}}
         </div>
-        {{Form::submit('Update', ['class' => 'btn btn-primary'])}}
+        {{Form::submit('Update', ['class' => 'btn btn-primary pull-left'])}}
     {!! Form::close() !!}
+
+    @if(Auth::user()->group->is_staff_group && $post->thread->first_post_id != $post->id)
+        {!! Form::open(['action' => ['PostController@destroy', $post->id], 'method' => 'DELETE']) !!}
+            {{Form::submit('Delete', ['class' => 'btn btn-danger pull-right'])}}
+        {!! Form::close() !!}
+    @endif
 @endsection

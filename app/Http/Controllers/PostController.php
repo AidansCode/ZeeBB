@@ -108,7 +108,7 @@ class PostController extends Controller
             return redirect('/')->with('error', 'The specified post does not exist!');
         }
 
-        if ($post->user_id != auth()->id()) {
+        if ($post->user_id != auth()->id() && !auth()->user()->group->is_staff_group) {
             return redirect('/')->with('error', 'You do not have permission to edit this post!');
         }
 
@@ -128,7 +128,7 @@ class PostController extends Controller
         if ($post == null) { //If post doesn't exist
             return redirect('/')->with('error', 'The specified post does not exist!');
         }
-        if ($post->user_id != auth()->id()) { //If user isn't post's creator
+        if ($post->user_id != auth()->id() && !auth()->user()->group->is_staff_group) { //If user isn't post's creator or staff
             return redirect('/')->with('error', 'You do not have permission to edit this post!');
         }
 
@@ -144,11 +144,52 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Post  $post
+     * @param  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
-        //
+        if (!auth()->user()->group->is_staff_group) {
+            return back()->withInput()->with('error', 'You do not have permission to delete this post!');
+        }
+
+        $post = Post::find($id);
+        if ($post == null) {
+            return redirect('/')->with('error', 'The specified post does not exist!');
+        }
+
+        if ($post->thread->first_post_id == $post->id) {
+            return back()->withInput()->with('error', 'The primary post in a thread can not be deleted!');
+        }
+
+        $post->delete();
+        $forum = $post->forum;
+
+        $forumLastPost = Post::where('forum_id', $forum->id)
+            ->orderBy('id', 'DESC')
+            ->limit(1)
+            ->get();
+        foreach($forumLastPost as $newLastPost) { //Will only loop once
+            $newUser = $newLastPost->user;
+            $forum->last_poster_id = $newUser->id;
+            $forum->last_poster_name = $newUser->name;
+            $forum->last_post_id = $newLastPost->id;
+            $forum->save();
+
+            $cat = $forum->parent;
+            $cat->last_poster_id = $newUser->id;
+            $cat->last_poster_name = $newUser->name;
+            $cat->last_post_id = $newLastPost->id;
+            $cat->save();
+        }
+
+        $thread = $post->thread;
+        $threadLastPost = $thread->posts()->orderBy('id', 'DESC')->limit(1)->get();
+        $newUser = $threadLastPost[0]->user;
+        $thread->last_poster_id = $newUser->id;
+        $thread->last_poster_name = $newUser->name;
+        $thread->save();
+
+        return redirect('/thread/' . $post->thread->id)->with('success', 'The post has been successfully deleted!');
     }
 }
