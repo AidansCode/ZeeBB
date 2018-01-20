@@ -46,3 +46,9 @@
     {!! Form::close() !!}
     {{$posts->render()}}
 @endsection
+
+@section('jscript')
+    <script>
+        CKEDITOR.replace( 'ckeditor' );
+    </script>
+@endsection

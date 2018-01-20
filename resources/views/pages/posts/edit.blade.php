@@ -21,3 +21,9 @@
         {!! Form::close() !!}
     @endif
 @endsection
+
+@section('jscript')
+    <script>
+        CKEDITOR.replace( 'ckeditor' );
+    </script>
+@endsection

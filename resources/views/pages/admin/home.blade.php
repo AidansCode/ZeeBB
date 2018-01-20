@@ -10,6 +10,7 @@
         <li role="presentation"><a href="/admin/users">Users</a></li>
         <li role="presentation"><a href="/admin/groups">Groups</a></li>
         <li role="presentation"><a href="/admin/forums">Forums</a></li>
+        <li role="presentation"><a href="/admin/settings">Settings</a></li>
     </ul>
 
     {!! Form::open(['action' => ['AdminController@settingUpdate', $adminNotes->id], 'method' => 'PUT']) !!}

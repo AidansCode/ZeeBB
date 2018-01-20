@@ -37,9 +37,13 @@
         {{Form::submit('Update', ['class' => 'btn btn-primary pull-left'])}}
     {!! Form::close() !!}
 
-    <a href="#" class="btn btn-danger pull-left" style="margin-left: 15px;">Ban</a>
+    @if(userHasPermission('pl_ban'))
+        <a href="#" class="btn btn-danger pull-left" style="margin-left: 15px;">Ban</a>
+    @endif
 
-    {!! Form::open(['action' => ['AdminController@userDestroy', $user->id], 'method' => 'DELETE']) !!}
-        {{Form::submit('Delete', ['class' => 'btn btn-warning pull-right', 'style' => 'margin-left: 15px;'])}}
-    {!! Form::close() !!}
+    @if(userHasPermission('pl_delete_user'))
+        {!! Form::open(['action' => ['AdminController@userDestroy', $user->id], 'method' => 'DELETE']) !!}
+            {{Form::submit('Delete', ['class' => 'btn btn-warning pull-right', 'style' => 'margin-left: 15px;'])}}
+        {!! Form::close() !!}
+    @endif
 @endsection

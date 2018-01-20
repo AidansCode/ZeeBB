@@ -20,3 +20,15 @@
 
         return '<a href="/user/' . $userID . '">' . $user->name . '</a>';
     }
+
+    function getSettingValue($id) {
+        $setting = \App\Setting::where('name', $id)->get();
+        if (count($setting) > 0) {
+            return $setting[0]->value;
+        } else return "";
+    }
+
+    function userHasPermission($action) {
+        $settingVal = intval(getSettingValue($action));
+        return auth()->user()->group->power_level >= $settingVal; //Return true if user's power level >= setting's level
+    }

@@ -27,4 +27,8 @@ class Forum extends Model
         //I realize the forum doesn't belong to the post but that's the relationship I need for this method
         return $this->belongsTo('App\Post', 'last_post_id');
     }
+
+    public function posts() {
+        return $this->hasMany('App\Post');
+    }
 }

@@ -43,5 +43,7 @@ Route::get('admin/forums/edit/{id}', 'AdminController@forumEdit');
 Route::get('admin/forums/create', 'AdminController@forumCreate');
 Route::post('admin/forums', 'AdminController@forumStore');
 Route::put('admin/forums/{id}', 'AdminController@forumUpdate');
+Route::delete('admin/forums/{id}', 'AdminController@forumDestroy');
 
+Route::get('admin/settings', 'AdminController@settingIndex');
 Route::put('admin/settings/{id}', 'AdminController@settingUpdate');

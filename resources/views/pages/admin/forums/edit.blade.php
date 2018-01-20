@@ -33,7 +33,16 @@
                 {{Form::label('closed', 'Closed')}}
                 {{Form::checkbox('closed', 1, $forum->closed, ['class' => 'form-control'])}}
             </div>
+            <div class="col-md-6">
+                <div class="alert alert-warning">
+                    <strong>Careful!</strong> Deleting a category or forum will delete all of its children, threads, and posts!
+                </div>
+            </div>
         </div>
-        {{Form::submit('Update', ['class' => 'btn btn-primary'])}}
+        {{Form::submit('Update', ['class' => 'btn btn-primary pull-left'])}}
+    {!! Form::close() !!}
+
+    {!! Form::open(['action' => ['AdminController@forumDestroy', $forum->id], 'method' => 'DELETE']) !!}
+        {{Form::submit('Delete', ['class' => 'btn btn-danger pull-right'])}}
     {!! Form::close() !!}
 @endsection

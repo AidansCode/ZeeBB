@@ -10,6 +10,7 @@
         <li role="presentation"><a href="/admin/users">Users</a></li>
         <li role="presentation"><a href="/admin/groups">Groups</a></li>
         <li role="presentation" class="active"><a href="/admin/forums">Forums</a></li>
+        <li role="presentation"><a href="/admin/settings">Settings</a></li>
     </ul>
 
     <a href="/admin/forums/create" class="btn btn-primary pull-right" style="margin-top: 22px;">Create Category/Forum</a>

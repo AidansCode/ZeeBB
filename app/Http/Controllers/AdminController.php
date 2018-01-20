@@ -17,6 +17,22 @@ class AdminController extends Controller
     public function __construct() {
         $this->middleware('auth');
         $this->middleware('staff');
+
+        $this->middleware('manage_users', ['only' =>
+            ['userIndex', 'userCreate', 'userStore', 'userEdit', 'userUpdate', 'userDestroy']
+        ]);
+
+        $this->middleware('manage_groups', ['only' =>
+            ['groupIndex', 'groupCreate', 'groupStore', 'groupEdit', 'groupUpdate', 'groupDestroy']
+        ]);
+
+        $this->middleware('manage_forums', ['only' =>
+            ['forumIndex', 'forumCreate', 'forumStore', 'forumEdit', 'forumUpdate', 'forumDestroy']
+        ]);
+
+        $this->middleware('manage_settings', ['only' =>
+            ['settingIndex', 'settingUpdate']
+        ]);
     }
 
     public function index() {
@@ -127,6 +143,10 @@ class AdminController extends Controller
     }
 
     public function userDestroy($id) {
+        if(!userHasPermission('pl_delete_user')) {
+            return redirect('/admin')->with('error', 'You do not have permission to delete users!');
+        }
+
         User::destroy($id);
 
         return redirect('/admin/users/')->with('success', 'You have successfully deleted user ID: ' . $id);
@@ -304,15 +324,80 @@ class AdminController extends Controller
         return redirect('/admin/forums/edit/' . $forum->id)->with('success', 'Your changes have been saved!');
     }
 
+    public function forumDestroy($id) {
+        $forum = Forum::find($id);
+        if ($forum == null) {
+            return redirect('/admin/forums')->with('error', 'The specified forum does not exist!');
+        }
+
+        if ($forum->type == 'c') { //is category
+            foreach ($forum->children as $child) {
+                foreach($child->threads as $thread) {
+                    foreach ($thread->posts as $post) {
+                        $post->delete();
+                    }
+                    $thread->delete();
+                }
+                $child->delete();
+            }
+            $forum->delete();
+        } else { //is forum
+            foreach($forum->threads as $thread) {
+                foreach($thread->posts as $post) {
+                    $post->delete();
+                }
+                $thread->delete();
+            }
+            $forum->delete();
+
+            $lastPost = null;
+            $parent = $forum->parent;
+            foreach($parent->children as $child) { //Loop through all children to find latest 'last post'
+                if ($child->posts()->count() == 0) continue;
+
+                $childLastPost = $child->lastPost;
+                if ($lastPost == null || $childLastPost->id > $lastPost->id)
+                    $lastPost = $childLastPost;
+            }
+
+            if ($lastPost == null) {
+                $parent->last_poster_id = 0;
+                $parent->last_poster_name = '';
+                $parent->last_post_id = 0;
+            } else {
+                $user = $lastPost->user;
+                $parent->last_poster_id = $user->id;
+                $parent->last_poster_name = $user->name;
+                $parent->last_post_id = $lastPost->id;
+            }
+            $parent->save();
+        }
+
+        return redirect('/admin/forums')->with('success', 'You have successfully deleted forum id ' . $id . '!');
+    }
+
+    public function settingIndex() {
+        $settings = Setting::where('name', '!=', 'adminnotes')->paginate(10);
+
+        return view('pages.admin.settings.index')->with('settings', $settings);
+    }
+
     public function settingUpdate(Request $request, $id) {
         $setting = Setting::find($id);
         if ($setting == null) {
             return redirect('/admin')->with('error', 'The specified setting does not exist!');
         }
 
-        if ($setting->type = 'textarea') {
+        $type = $setting->type;
+        if ($type == 'textarea' || $type == 'text') {
             $val = $request->input('value');
             $setting->value = $val != null ? $val : ''; //If value is specified, use value, otherwise use empty string
+        } else if ($type == 'number') {
+            $val = intval($request->input('value'));
+            if ($val < 0) {
+                return back()->withInput()->with('error', 'Value has a minimum of 0.');
+            }
+            $setting->value = $val;
         }
         $setting->save();
 

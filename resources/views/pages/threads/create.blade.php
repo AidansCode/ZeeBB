@@ -27,3 +27,9 @@
         {{Form::submit('Create Post', ['class' => 'btn btn-primary', 'style' => 'margin-bottom: 15px;'])}}
     {!! Form::close() !!}
 @endsection
+
+@section('jscript')
+    <script>
+        CKEDITOR.replace( 'ckeditor' );
+    </script>
+@endsection
