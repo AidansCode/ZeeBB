@@ -32,3 +32,33 @@
         $settingVal = intval(getSettingValue($action));
         return auth()->user()->group->power_level >= $settingVal; //Return true if user's power level >= setting's level
     }
+
+    function getBanLengths() {
+        return [
+            '300' => '5 Minutes',
+            '1800' => '30 Minutes',
+            '3600' => '1 Hour',
+            '7200' => '2 Hours',
+            '43200' => '12 Hours',
+            '86400' => '1 Day',
+            '172800' => '2 Days',
+            '604800' => '1 Week',
+            '1209600' => '2 Weeks',
+            '2419200' => '4 Weeks',
+            '0' => 'Permanent'
+        ];
+    }
+
+    function isUserBanned(\App\User $user) {
+        if ($user->group->is_banned_group) { //if user is in a banned group
+            $ban = \App\Ban::where('user_id', $user->id)->get()[0];
+            if ($ban->length == 0 || strtotime($ban->created_at) + $ban->length > time()) { //if still banned
+                return true;
+            } else { //ban expired, reset user group and remove ban
+                $user->group_id = $ban->group_id;
+                $user->save();
+                $ban->delete();
+            }
+        }
+        return false;
+    }

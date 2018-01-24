@@ -1,0 +1,13 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Ban extends Model
+{
+    protected $table = 'bans';
+
+    public $primaryKey = 'id';
+    public $timestamps = true;
+}

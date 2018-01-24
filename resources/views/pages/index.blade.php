@@ -20,18 +20,20 @@
                         <div class="panel-body">
                             @foreach($forums as $forum)
                                 @if($forum->type== 'f' && $forum->parent_id==$category->id)
-                                    <a href="/forums/{{$forum->id}}/">{{$forum->name}}</a> ({{$forum->description}})
-                                    <span class="pull-right">
-                                        @if($forum->last_post_id != 0)
-                                            Last Post:
-                                            <a href="/thread/{{$forum->lastPost->thread->id}}#post{{$forum->last_post_id}}">
-                                                {{$forum->lastPost->subject}}
-                                            </a>
-                                            by {!! formatUsernameLink($forum->last_poster_id) !!}
-                                        @else
-                                            No Posts
-                                        @endif
-                                    </span>
+                                    <div>
+                                        <a href="/forums/{{$forum->id}}/">{{$forum->name}}</a> ({{$forum->description}})
+                                        <span class="pull-right">
+                                            @if($forum->last_post_id != 0)
+                                                Last Post:
+                                                <a href="/thread/{{$forum->lastPost->thread->id}}#post{{$forum->last_post_id}}">
+                                                    {{$forum->lastPost->subject}}
+                                                </a>
+                                                by {!! formatUsernameLink($forum->last_poster_id) !!}
+                                            @else
+                                                No Posts
+                                            @endif
+                                        </span>
+                                    </div>
                                     <br />
                                 @endif
                             @endforeach

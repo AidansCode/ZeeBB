@@ -61,5 +61,6 @@ class Kernel extends HttpKernel
         'manage_settings' => \App\Http\Middleware\CheckManageSettings::class,
         'manage_groups' => \App\Http\Middleware\CheckManageGroups::class,
         'manage_forums' => \App\Http\Middleware\CheckManageForums::class,
+        'banned' => \App\Http\Middleware\CheckBanned::class,
     ];
 }

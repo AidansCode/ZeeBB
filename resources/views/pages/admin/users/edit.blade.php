@@ -38,7 +38,11 @@
     {!! Form::close() !!}
 
     @if(userHasPermission('pl_ban'))
-        <a href="#" class="btn btn-danger pull-left" style="margin-left: 15px;">Ban</a>
+        @if(isUserBanned($user))
+            <a href="/admin/users/unban/{{$user->id}}" class="btn btn-success pull-left" style="margin-left: 15px;">Unban</a>
+        @else
+            <a href="/admin/users/ban/{{$user->id}}" class="btn btn-danger pull-left" style="margin-left: 15px;">Ban</a>
+        @endif
     @endif
 
     @if(userHasPermission('pl_delete_user'))

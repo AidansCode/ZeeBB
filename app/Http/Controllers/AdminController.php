@@ -11,6 +11,7 @@ use App\Forum;
 use App\Post;
 use App\Thread;
 use App\Setting;
+use App\Ban;
 
 class AdminController extends Controller
 {
@@ -19,7 +20,7 @@ class AdminController extends Controller
         $this->middleware('staff');
 
         $this->middleware('manage_users', ['only' =>
-            ['userIndex', 'userCreate', 'userStore', 'userEdit', 'userUpdate', 'userDestroy']
+            ['userIndex', 'userCreate', 'userStore', 'userEdit', 'userUpdate', 'userDestroy', 'userCreateBan', 'userBan']
         ]);
 
         $this->middleware('manage_groups', ['only' =>
@@ -99,6 +100,7 @@ class AdminController extends Controller
             'groups' => $groups,
         ];
 
+        isUserBanned($user); //update ban status for viewing
         return view('pages.admin.users.edit')->with($data);
     }
 
@@ -150,6 +152,49 @@ class AdminController extends Controller
         User::destroy($id);
 
         return redirect('/admin/users/')->with('success', 'You have successfully deleted user ID: ' . $id);
+    }
+
+    public function userCreateBan($id) {
+        if (!userHasPermission('pl_ban')) {
+            return redirect('/admin/users/')->with('error', 'You do not have permission to ban players!');
+        }
+
+        $user = User::find($id);
+        if ($user == null) {
+            return redirect('/admin/users/')->with('error', 'The specified user does not exist!');
+        }
+
+        return view('pages.admin.users.create_ban')->with('user', $user);
+    }
+
+    public function userBan(Request $request, $id) {
+        if (!userHasPermission('pl_ban')) {
+            return redirect('/admin/users/')->with('error', 'You do not have permission to ban players!');
+        }
+
+        $user = User::find($id);
+        if ($user == null) {
+            return redirect('/admin/users/')->with('error', 'The specified user does not exist!');
+        }
+
+        $this->validate($request, [
+            'reason' => 'required',
+            'length' => 'required|integer|in:' . implode(',', array_keys(getBanLengths()))
+            //last bit of ^ checks if given length is an allowed ban length
+            //checks if given length is a key in getBanLengths array
+        ]);
+
+        $ban = new Ban;
+        $ban->user_id = $user->id;
+        $ban->group_id = $user->group_id;
+        $ban->length = $request->input('length');
+        $ban->reason = $request->input('reason');
+        $ban->save();
+
+        $user->group_id = Group::where('is_banned_group', '1')->get()[0]->id;
+        $user->save();
+
+        return redirect('/admin/users/edit/' . $user->id)->with('success', 'You have successfully banned user: ' . $user->name);
     }
 
     public function groupIndex() {
