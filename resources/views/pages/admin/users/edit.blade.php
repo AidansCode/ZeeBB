@@ -5,6 +5,17 @@
 @endsection
 
 @section('content')
+    @if(isset($ban))
+        <div class="alert alert-warning">
+            <p>
+                <strong>This user is currently banned!</strong><br />
+                Reason: {{$ban->reason}}<br />
+                Length: {{getBanLengths()['' . $ban->length]}}<br />
+                Banned: {{$ban->created_at}}
+            </p>
+        </div>
+    @endif
+
     <a href="/admin/users/" class="btn btn-default">Back</a>
     <h1>Edit User: {{$user->name}}</h1>
     {!! Form::open(['action' => ['AdminController@userUpdate', $user->id], 'method' => 'PUT']) !!}

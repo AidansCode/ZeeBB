@@ -100,7 +100,9 @@ class AdminController extends Controller
             'groups' => $groups,
         ];
 
-        isUserBanned($user); //update ban status for viewing
+        if (isUserBanned($user)) {
+            $data['ban'] = Ban::where('user_id', $id)->get()[0];
+        }
         return view('pages.admin.users.edit')->with($data);
     }
 

@@ -3,15 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Forum;
 use App\User;
 use App\Post;
+use App\Ban;
 
 class PageController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth', ['except' => ['index', 'banned']]);
+        $this->middleware('auth', ['except' => ['index']]);
     }
 
     public function index() {
@@ -59,6 +61,10 @@ class PageController extends Controller
     }
 
     public function banned() {
-        return view('pages.banned');
+        $ban = Ban::where('user_id', Auth::id())->get();
+        if (isUserBanned(Auth::user())) //insure user should still be banned
+            return view('pages.banned')->with('ban', $ban[0]);
+        else
+            return redirect('/')->with('error', 'You are not currently banned!');
     }
 }
