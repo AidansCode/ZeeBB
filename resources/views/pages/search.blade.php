@@ -5,6 +5,12 @@
 @endsection
 
 @section('content')
+    <ul class="breadcrumb">
+        <li><a href="/">Home</a></li>
+        <li><a href="/user/{{$user->id}}">Profile of {{$user->name}}</a></li>
+        <li class="active">{{$type}}</li>
+    </ul>
+
     @if(count($results) == 0)
         <h1 class="text-center">The query returned 0 results.</h1>
     @else
